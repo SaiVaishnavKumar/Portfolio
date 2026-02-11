@@ -1,0 +1,17 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node / tooling (if any)
+node_modules/
+npm-debug.log*
+
+# VS Code
+.vscode/
+
+# System / accidental files
+.bash_history
+.gitconfig
+.npmrc
+.ssh/
+AppData/
