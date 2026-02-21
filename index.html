@@ -502,12 +502,14 @@
       <div class="contact-form">
         <h3>Send Me a Message</h3>
 
-        <form>
-          <input type="text" placeholder="Your Name" required>
-          <input type="email" placeholder="Your Email" required>
-          <textarea rows="6" placeholder="Your Message" required></textarea>
-          <button type="submit">Send Message</button>
-        </form>
+        
+<form id="contact-form" action="https://formspree.io/f/mnjbgnoa" method="POST">
+  <input type="text" name="name" placeholder="Your Name" required>
+  <input type="email" name="email" placeholder="Your Email" required>
+  <textarea name="message" rows="6" placeholder="Your Message" required></textarea>
+  <button type="submit" id="form-button">Send Message</button>
+  <p id="form-status" style="margin-top: 10px; font-weight: 500;"></p>
+</form>
       </div>
 
       <div class="contact-info">
@@ -562,17 +564,18 @@
     let currentRole = 0;
 
     function showText(roleText) {
-        roleElement.style.opacity = "0";
-        setTimeout(() => {
-            roleElement.textContent = roleText;
-            roleElement.style.opacity = "1";
-        }, 500);
+      if (!roleElement) return;
+      roleElement.style.opacity = "0";
+      setTimeout(() => {
+        roleElement.textContent = roleText;
+        roleElement.style.opacity = "1";
+      }, 500);
     }
 
     function rotateRoles() {
-        showText(roles[currentRole]);
-        currentRole = (currentRole + 1) % roles.length;
-        setTimeout(rotateRoles, 4000);
+      showText(roles[currentRole]);
+      currentRole = (currentRole + 1) % roles.length;
+      setTimeout(rotateRoles, 4000);
     }
     setTimeout(rotateRoles, 300);
 
@@ -581,88 +584,81 @@
     const navLinks = document.querySelectorAll(".nav-link");
     const timelineItems = document.querySelectorAll('.timeline-item');
 
-    // Observer for Education Timeline
     const timelineObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("active");
-            }
-        });
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+        }
+      });
     }, { threshold: 0.3 });
 
     timelineItems.forEach(item => timelineObserver.observe(item));
 
-    // Combined Scroll Listener for Navbar Links
     window.addEventListener("scroll", () => {
-        let current = "";
-        const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+      let current = "";
+      const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
 
-        sections.forEach((section) => {
-            const sectionTop = section.offsetTop - 150;
-            if (scrollPos >= sectionTop) {
-                current = section.getAttribute("id");
-            }
-        });
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop - 150;
+        if (scrollPos >= sectionTop) {
+          current = section.getAttribute("id");
+        }
+      });
 
-        navLinks.forEach((link) => {
-            link.classList.remove("active");
-            if (link.getAttribute("href") === `#${current}`) {
-                link.classList.add("active");
-            }
-        });
+      navLinks.forEach((link) => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === `#${current}`) {
+          link.classList.add("active");
+        }
+      });
     });
 
-    // --- 3. Skills Animation (Auto-reset and run) ---
+    // --- 3. Skills Animation ---
     function animateSkills() {
-        const skillsSection = document.getElementById('skills');
-        const progressFills = document.querySelectorAll('.progress-fill');
-        const progressNumbers = document.querySelectorAll('.progress-number');
+      const skillsSection = document.getElementById('skills');
+      const progressFills = document.querySelectorAll('.progress-fill');
+      const progressNumbers = document.querySelectorAll('.progress-number');
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Start bar animation
-                    progressFills.forEach(fill => {
-                        const targetWidth = fill.style.getPropertyValue('--progress-width') || 
-                                          fill.getAttribute('style').match(/--progress-width:\s*(\d+%)/)[1];
-                        fill.style.width = '0';
-                        setTimeout(() => {
-                            fill.classList.add('animate');
-                            fill.style.width = targetWidth;
-                        }, 10);
-                    });
+      if (!skillsSection) return;
 
-                    // Start number counter
-                    progressNumbers.forEach(number => {
-                        const target = parseInt(number.getAttribute('data-target'));
-                        let count = 0;
-                        const duration = 1500;
-                        const startTime = performance.now();
-
-                        function update(currentTime) {
-                            const elapsed = currentTime - startTime;
-                            if (elapsed < duration) {
-                                count = Math.round((elapsed / duration) * target);
-                                number.textContent = count + '%';
-                                requestAnimationFrame(update);
-                            } else {
-                                number.textContent = target + '%';
-                            }
-                        }
-                        requestAnimationFrame(update);
-                    });
-                } else {
-                    // Reset when scrolled away
-                    progressFills.forEach(fill => {
-                        fill.classList.remove('animate');
-                        fill.style.width = '0';
-                    });
-                    progressNumbers.forEach(num => num.textContent = '0%');
-                }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            progressFills.forEach(fill => {
+              const styleAttr = fill.getAttribute('style');
+              const match = styleAttr ? styleAttr.match(/--progress-width:\s*(\d+%)/) : null;
+              const targetWidth = match ? match[1] : '0%';
+              
+              fill.style.width = '0';
+              setTimeout(() => {
+                fill.classList.add('animate');
+                fill.style.width = targetWidth;
+              }, 10);
             });
-        }, { threshold: 0.3 });
 
-        observer.observe(skillsSection);
+            progressNumbers.forEach(number => {
+              const target = parseInt(number.getAttribute('data-target'));
+              let count = 0;
+              const duration = 1500;
+              const startTime = performance.now();
+
+              function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                if (elapsed < duration) {
+                  count = Math.round((elapsed / duration) * target);
+                  number.textContent = count + '%';
+                  requestAnimationFrame(update);
+                } else {
+                  number.textContent = target + '%';
+                }
+              }
+              requestAnimationFrame(update);
+            });
+          }
+        });
+      }, { threshold: 0.3 });
+
+      observer.observe(skillsSection);
     }
     animateSkills();
 
@@ -671,44 +667,91 @@
     const showLessBtn = document.getElementById('show-less-btn');
     const hiddenCerts = document.querySelectorAll('.hidden-cert');
 
-    showMoreBtn.addEventListener('click', () => {
+    if (showMoreBtn && showLessBtn) {
+      showMoreBtn.addEventListener('click', () => {
         hiddenCerts.forEach(cert => cert.style.display = 'block');
         showMoreBtn.style.display = 'none';
         showLessBtn.style.display = 'inline-block';
-    });
+      });
 
-    showLessBtn.addEventListener('click', () => {
+      showLessBtn.addEventListener('click', () => {
         hiddenCerts.forEach(cert => cert.style.display = 'none');
         showMoreBtn.style.display = 'inline-block';
         showLessBtn.style.display = 'none';
         document.getElementById('certificates').scrollIntoView({ behavior: 'smooth' });
-    });
-
-    // --- 5. Theme Toggle Logic (With Persistence) ---
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = themeToggle.querySelector('i');
-
-    // Check for saved user preference
-    if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-mode');
-        themeIcon.classList.replace('fa-moon', 'fa-sun');
+      });
     }
 
-    themeToggle.addEventListener('click', () => {
+    // --- 5. Theme Toggle Logic ---
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      const themeIcon = themeToggle.querySelector('i');
+      if (localStorage.getItem('theme') === 'light') {
+        document.body.classList.add('light-mode');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+      }
+
+      themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         const isLight = document.body.classList.contains('light-mode');
-        
-        // Update icon
         if (isLight) {
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
-            localStorage.setItem('theme', 'light');
+          themeIcon.classList.replace('fa-moon', 'fa-sun');
+          localStorage.setItem('theme', 'light');
         } else {
-            themeIcon.classList.replace('fa-sun', 'fa-moon');
-            localStorage.setItem('theme', 'dark');
+          themeIcon.classList.replace('fa-sun', 'fa-moon');
+          localStorage.setItem('theme', 'dark');
         }
-    });
-});
-</script>
+      });
+    }
 
+    // --- 6. Contact Form Logic (Fixed and Integrated) ---
+    const contactForm = document.getElementById("contact-form");
+    const formButton = document.getElementById("form-button");
+    const formStatus = document.getElementById("form-status");
+
+    if (contactForm) {
+      contactForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        formButton.disabled = true;
+        const originalText = formButton.textContent;
+        formButton.textContent = "Sending...";
+        formStatus.textContent = "";
+
+        const data = new FormData(contactForm);
+        
+        try {
+          const response = await fetch(contactForm.action, {
+            method: 'POST',
+            body: data,
+            headers: { 'Accept': 'application/json' }
+          });
+
+          if (response.ok) {
+            formStatus.innerHTML = "Success! Your message has been sent.";
+            formStatus.style.color = "#28a745";
+            contactForm.reset();
+            formButton.textContent = "Message Sent";
+          } else {
+            const result = await response.json();
+            formStatus.textContent = result.errors ? result.errors.map(error => error.message).join(", ") : "Oops! There was a problem.";
+            formStatus.style.color = "#dc3545";
+            formButton.textContent = "Try Again";
+          }
+        } catch (error) {
+          formStatus.textContent = "Connection error. Please try again later.";
+          formStatus.style.color = "#dc3545";
+          formButton.textContent = "Try Again";
+        } finally {
+          formButton.disabled = false;
+          setTimeout(() => {
+            formButton.textContent = originalText;
+            formStatus.textContent = "";
+          }, 4000);
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>
