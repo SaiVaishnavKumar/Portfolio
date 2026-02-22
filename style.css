@@ -1,3 +1,109 @@
+/* Fixed Double Orbit Preloader */
+#preloader {
+  position: fixed;
+  inset: 0;
+  background: #050505;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.loader-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex; /* Keeps the SVK text centered */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Outer Orbiting Ring */
+.loader-container::before {
+  content: "";
+  position: absolute;
+  inset: 0; /* Ensures it fills the 150px container exactly */
+  border: 3px solid transparent;
+  border-top-color: #00d2ff;
+  border-bottom-color: #00d2ff;
+  border-radius: 50%;
+  animation: rotateOrbit 2s linear infinite;
+  z-index: 1;
+}
+
+/* Inner Orbiting Ring */
+.loader-container::after {
+  content: "";
+  position: absolute;
+  inset: 15px; /* Creates the gap between outer and inner ring */
+  border: 2px solid transparent;
+  border-left-color: #3a7bd5;
+  border-right-color: #3a7bd5;
+  border-radius: 50%;
+  animation: rotateOrbitReverse 1.5s linear infinite;
+  z-index: 1;
+}
+
+/* The SVK Text - Locked in Center */
+.loader-text {
+  position: absolute;          /* key fix */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* perfect centering */
+
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  letter-spacing: 4px;
+  text-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+  z-index: 10;
+  margin: 0;
+  pointer-events: none;
+  text-align: center;
+}
+.loading-status {
+  margin-top: 30px;
+  color: #b3b3b3;
+  font-size: 0.8rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  font-weight: 300;
+  background: linear-gradient(90deg, #050505, #fff, #050505);
+  background-repeat: no-repeat;
+  background-size: 80%;
+  animation: revealText 2s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes rotateOrbit {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); } /* Subtle scale for organic feel */
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes rotateOrbitReverse {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes revealText {
+  0% { background-position: -500%; }
+  100% { background-position: 500%; }
+}
+
+.preloader-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.1); /* Smoother exit scale */
+}
+
+
+
     * {
       margin: 0;
       padding: 0;
@@ -62,16 +168,20 @@ body.light-mode {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   color: var(--text-color);
-  width: 45px;
-  height: 45px;
+  /* Reduced size from 45px to 35px */
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  /* Reduced font size for the icon */
+  font-size: 1rem; 
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: var(--shadow);
+  /* Added margin-left to give it space from the nav links */
+  margin-left: 15px; 
 }
 
 #theme-toggle:hover {
@@ -378,41 +488,92 @@ body.light-mode .profile-img { border: 4px solid #000; }
 html {
   scroll-behavior: smooth;
 }
-    .btn-group {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-bottom: 50px;
-      flex-wrap: wrap;
-      border-radius: 25px;
-      position: relative;
-    z-index: 10;
+/* ================= BUTTON GROUP ================= */
+.btn-group {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  align-items: center; /* ✅ keeps all buttons in one straight line */
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 10;
+}
 
-    }
+/* ================= MASTER CV CONTAINER ================= */
+.master-cv-container {
+  position: relative;
+  display: inline-flex; /* ✅ prevents layout shift */
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
-    .btn {
-      display: inline-block;
-      padding: 12px 35px;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.3s;
-      font-size: 0.95rem;
-    }
+/* ================= DOWNLOAD CV BUTTON ================= */
+.btn-primary.download-cv {
+  padding: 16px 65px 16px 35px !important; /* ✅ extra right space for eye */
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+  border-width: 3px !important;
+  border-radius: 50px !important;
+  letter-spacing: 1px;
+}
 
-    .btn-primary {
-      background: transparent;
-      color: var(--text-color);
-      border: 2px solid var(--text-color);
-    }
+/* ================= EYE BADGE ================= */
+.view-eye-link {
+  position: absolute;
+  top: 50%;                         /* ✅ perfect vertical center */
+  right: 15px;                     /* ✅ slight outside overlap */
+  transform: translateY(-50%);
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      background: var(--accent-gradient);
-      color: #ffffff;
-      border-color: transparent;
-      box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
-    }
+  width: 42px;
+  height: 42px;
+  background: #000;
+  border: 3px solid #fff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  z-index: 20;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
 
+/* ================= MASTER HOVER ================= */
+.master-cv-container:hover {
+  transform: scale(1.08) translateY(-5px);
+}
+
+.master-cv-container:hover .view-eye-link {
+  background: #fff !important;
+  color: #000 !important;
+  transform: translateY(-50%) rotate(15deg) scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+/* ================= STANDARD BUTTONS ================= */
+.btn-primary {
+  padding: 14px 35px;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 2px solid #fff;
+  border-radius: 50px;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: #fff !important;
+  color: #000 !important;
+  transform: translateY(-5px);
+}
+
+/* ================= DOWNLOAD HOVER ================= */
+.btn-group a[download]:hover {
+  font-weight: 800;
+  transform: scale(1.05) translateY(-3px);
+}
     .btn-secondary {
       background: transparent;
       color: var(--text-color);
@@ -710,7 +871,7 @@ html {
 }
 
 .project-content h3 {
-  color: var(--timeline-line);
+  color: rgb(10, 198, 219);
   font-size: 1.4rem;
   margin-bottom: 12px;
 }
@@ -730,7 +891,7 @@ html {
 
 .tech-tag {
   background: rgba(0, 255, 213, 0.1);
-  color: #00ffd5;
+    color: rgb(10, 198, 219);
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 0.8rem;

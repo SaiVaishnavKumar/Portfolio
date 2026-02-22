@@ -31,6 +31,18 @@
 
 <body>
 
+  <div id="preloader">
+  <div class="loader-container">
+    <svg class="loader-circle" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45"></circle>
+    </svg>
+    <div class="loader-text">SVK </div>
+  </div>
+   <p class="loading-status">KSVK Connect</p>
+  <p class="loading-status">Loading Vaishnav Portfolio</p>
+   
+</div>
+
   <nav>
   <h1>KSVK</h1>
   <ul>
@@ -61,12 +73,20 @@
         Passionate Computer Science student specializing in Web Development and MERN Stack. 
         I create beautiful, responsive, and high-performance web applications with cutting-edge technology.
       </p>
-
 <div class="btn-group">
-  <a href="Vaishnavcv-m.pdf" download class="btn btn-primary">Download CV</a>
-  <a href="#project" class="btn btn-primary">View My Work</a>
-  <a href="#contact" class="btn btn-primary">Get In Touch</a>
+  <div class="master-cv-container">
+    <a href="Vaishnavcv-m.pdf" download class="btn-primary download-cv">
+      <i class="fas fa-download"></i> Download CV
+    </a>
+    <a href="Vaishnavcv-m.pdf" target="_blank" class="view-eye-link" title="View CV">
+      <i class="fas fa-eye"></i>
+    </a>
+  </div>
+  
+  <a href="#project" class="btn-primary">View My Work</a>
+  <a href="#contact" class="btn-primary">Get In Touch</a>
 </div>
+
 
 
       <div class="social-links">
@@ -485,8 +505,8 @@
   </div>
 
   <div style="margin-top: 40px;">
-    <button class="btn-primary" id="show-more-btn">Show More</button>
-    <button class="btn-primary" id="show-less-btn" style="display: none;">Show Less</button>
+    <button class="btn-primary" id="show-more-btn">View More Certificates</button>
+    <button class="btn-primary" id="show-less-btn" style="display: none;">View Less</button>
   </div>
 </section>
 
@@ -557,6 +577,62 @@
     <p>© 2026 K Sai Vaishnav Kumar. All rights reserved.</p>
   </footer>
 <script>
+
+// --- A. Preloader Closer ---
+window.addEventListener('load', () => {
+  const preloader = document.getElementById('preloader');
+  
+  // Wait at least 1.8 seconds so they see your cool SVK animation
+  setTimeout(() => {
+    preloader.classList.add('preloader-hidden');
+    // After it fades out, remove it from DOM to save performance
+    setTimeout(() => { preloader.style.display = 'none'; }, 600);
+  }, 1800); 
+});
+
+// --- B. Clean URL Logic (No # in Address Bar) ---
+document.querySelectorAll('.nav-link, .btn').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const targetId = this.getAttribute('href');
+    
+    // Only apply if it's an internal link
+    if (targetId && targetId.startsWith('#')) {
+      e.preventDefault();
+      const targetElement = document.querySelector(targetId);
+      
+      if (targetElement) {
+        // 1. Smooth Scroll to Target
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+        
+        // 2. The Magic: Update URL without adding the #hash
+        window.history.replaceState(null, null, ' '); 
+      }
+    }
+  });
+});
+
+// --- C. Reset Skill Bars on every visit to section ---
+const skillsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const progressFills = entry.target.querySelectorAll('.progress-fill');
+    if (entry.isIntersecting) {
+      progressFills.forEach(fill => {
+        const width = fill.getAttribute('style').match(/(\d+%)|(\d+px)/)[0];
+        fill.style.width = width;
+        fill.classList.add('animate');
+      });
+    } else {
+      // Reset width so it re-animates when you scroll back
+      progressFills.forEach(fill => {
+        fill.style.width = '0';
+        fill.classList.remove('animate');
+      });
+    }
+  });
+}, { threshold: 0.2 });
+
+skillsObserver.observe(document.getElementById('skills'));
+
   document.addEventListener("DOMContentLoaded", () => {
     // --- 1. Role Rotation Animation ---
     const roleElement = document.getElementById("role");
@@ -575,7 +651,7 @@
     function rotateRoles() {
       showText(roles[currentRole]);
       currentRole = (currentRole + 1) % roles.length;
-      setTimeout(rotateRoles, 4000);
+      setTimeout(rotateRoles, 2500);
     }
     setTimeout(rotateRoles, 300);
 
